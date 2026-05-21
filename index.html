@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brew & Bloom | Premium Coffee & Kitchen</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+    <div class="logo">Brew & Bloom</div>
+    <div>
+        <a href="#menu">Menu</a>
+        <a href="#track">Track Order</a>
+        <a href="#orders">My Orders</a>
+        <span class="theme-toggle" onclick="toggleTheme()">🌓</span>
+        <span id="userDisplay" style="margin-left:15px; font-weight:500;"></span>
+        <button class="btn" style="width:auto; margin-left:10px" onclick="logout()">Logout</button>
+    </div>
+</nav>
+
+<header>
+    <h1 style="font-family:'Playfair Display'">Brew & Bloom</h1>
+    <p class="hero-text">
+        <span>Artisan Beans</span> •
+        <span>Fresh Bites</span> •
+        <span>Daily Bloom</span>
+    </p>
+</header>
+
+<div class="container">
+    <main class="main-content">
+        <section id="menu">
+            <div class="controls">
+                <input type="text" class="search-input" placeholder="Search menu..." onkeyup="search(this.value)" style="flex:1">
+                <select class="filter-select" onchange="filterCategory(this.value)">
+                    <option value="all">All Items</option>
+                    <option value="Coffee">Coffee</option>
+                    <option value="Tea">Teas</option>
+                    <option value="Snacks">Bites</option>
+                    <option value="Desserts">Sweets</option>
+                </select>
+
+                <select class="filter-select" onchange="sortPrice(this.value)">
+                    <option value="">Sort by Price</option>
+                    <option value="low">Low → High</option>
+                    <option value="high">High → Low</option>
+                    <option value="under200">Under ₹200 </option>
+                    <option value="under300">Under ₹300</option>
+                </select>
+
+                <select class="filter-select" onchange="sortRating(this.value)">
+                    <option value="">Sort by Rating</option>
+                    <option value="high">High → Low</option>
+                    <option value="low">Low → High</option>
+                </select>
+                
+                <select class="filter-select" onchange="filterVeg(this.value)">
+                    <option value="Veg">Veg Only</option>
+                    <option value="Non-Veg">Non-Veg Only</option>
+                </select>
+
+                <button class="btn" style="width:auto; background:#555" onclick="resetFilters()">Reset</button>
+            </div>
+            <div class="menu-grid" id="menuList"></div>
+        </section>
+
+        <section id="track" style="margin-top: 50px; padding: 30px; background: var(--card-bg); border-radius: 20px; box-shadow: var(--shadow);">
+            <h2>Order Tracking</h2>
+            <div style="display:flex; gap:10px; margin-top:15px;">
+                <input id="trackId" class="search-input" style="flex:1" placeholder="Enter Order ID">
+                <button class="btn" style="width:auto" onclick="trackOrder()">Track</button>
+            </div>
+            <p id="status" style="margin-top:15px; font-weight:600; color:var(--primary)"></p>
+
+            <div id="reviewBox" style="display:none; margin-top: 20px; border-top: 1px solid #ddd; padding-top: 20px; text-align: center;">
+                <h4>Rate your experience</h4>
+                <div id="stars">
+                    <span onclick="setRating(1)">⭐</span><span onclick="setRating(2)">⭐</span><span onclick="setRating(3)">⭐</span><span onclick="setRating(4)">⭐</span><span onclick="setRating(5)">⭐</span>
+                </div>
+                <textarea id="reviewText" class="search-input" style="width:100%; height:60px; margin-top:10px" placeholder="Any feedback?"></textarea>
+                <button class="btn" style="margin-top:10px" onclick="submitReview()">Submit</button>
+            </div>
+        </section>
+
+        <section id="adminFeedback" style="display:none; margin-top:50px; padding:30px; background: var(--card-bg); border-radius: 20px; box-shadow: var(--shadow);">
+            <h2>Admin Feedback Panel</h2>
+            <textarea id="adminReply" class="search-input" style="width:100%; height:100px; margin-top:15px" placeholder="Write response to customer reviews..."></textarea>
+            <button class="btn" style="margin-top:15px" onclick="sendAdminFeedback()">Send Feedback</button>
+            <p id="adminMsg" style="margin-top:10px; color:green;"></p>
+        </section>
+        
+        <section id="orders" style="margin-top:50px; padding:30px; background: var(--card-bg); border-radius: 20px; box-shadow: var(--shadow);">
+            <h2>My Orders</h2>
+            <div id="ordersList" style="margin-top:15px"></div>
+        </section>
+
+        <section id="customerFeedbackSection" style="display:none; margin-top:50px; padding:30px; background: var(--card-bg); border-radius: 20px; box-shadow: var(--shadow);">
+            <h2>Customer Feedback</h2>
+            <textarea id="customerFeedback" class="search-input" style="width:100%; height:100px; margin-top:15px" placeholder="Write your feedback..."></textarea>
+            <button class="btn" style="margin-top:15px" onclick="submitCustomerFeedback()">Submit Feedback</button>
+        </section>
+
+        <section id="adminPanel" style="display:none; margin-top:50px; padding:30px; background: var(--card-bg); border-radius: 20px; box-shadow: var(--shadow);">
+            <h2>Customer Reviews</h2>
+            <div id="allReviews" style="margin-top:20px"></div>
+            <h2 style="margin-top:30px">Customer Orders</h2>
+            <div id="adminOrders"></div>
+        </section>
+
+        <section id="favorites" style="margin-top:50px; padding:30px; background: var(--card-bg); border-radius: 20px; box-shadow: var(--shadow);">
+            <h2>❤️ My Favorites</h2>
+            <div id="favoritesList" class="menu-grid" style="margin-top:20px"></div>
+        </section>
+    </main>
+
+    <aside class="sidebar">
+        <div style="margin-top:15px">
+            <p style="font-weight:600; font-size:0.9rem">Split Bill</p>
+            <div style="display:flex; gap:5px; margin-top:5px">
+                <input type="number" id="peopleCount" class="search-input" placeholder="No. of people" min="1" style="flex:1">
+                <button class="btn" style="width:auto" onclick="splitBill()">Split</button>
+            </div>
+            <p id="splitResult" style="margin-top:8px; font-size:0.85rem; color:var(--primary)"></p>
+        </div>
+
+        <div class="cart-box">
+            <h3>Current Order</h3>
+            <div id="cartItems" style="margin-top:15px"></div>
+            
+            <div style="margin-top:15px; display:flex; gap:5px">
+                <input type="text" id="promoCode" class="search-input" placeholder="Code: COFFEE10" style="flex:1; padding:8px 15px">
+                <button class="btn" style="width:auto" onclick="applyPromo()">Apply</button>
+            </div>
+            <p id="promoMsg" style="font-size:0.75rem; margin-top:4px"></p>
+
+            <div class="bill-details">
+                <div class="bill-row"><span>Subtotal</span> <span>₹<span id="subtotal">0</span></span></div>
+                <div class="bill-row" style="color:green"><span>Discount</span> <span>-₹<span id="distAmt">0</span></span></div>
+                <div class="bill-row"><span>GST (5%)</span> <span>₹<span id="gst">0</span></span></div>
+                <div class="bill-row"><span>Delivery</span> <span>₹<span id="delivery">0</span></span></div>
+                <div class="bill-row total-row"><span>Total</span> <span>₹<span id="total">0</span></span></div>
+            </div>
+
+            <div style="margin-top:15px">
+                <p style="font-weight:600; font-size:0.9rem">Delivery Address</p>
+                <select id="addressSelect" class="filter-select" style="width:100%; margin-top:5px"></select>
+                <div style="display:flex; gap:5px; margin-top:5px">
+                    <input type="text" id="newAddress" class="search-input" placeholder="Add new address">
+                    <button class="btn" style="width:auto" onclick="saveAddress()">Save</button>
+                </div>
+            </div>
+
+            <div style="margin-top:20px">
+                <p style="font-weight:600; font-size:0.9rem">Payment</p>
+                <select id="payMethod" class="filter-select" style="width:100%; margin-top:5px" onchange="togglePay(this.value)">
+                    <option value="UPI">UPI / GPay</option>
+                    <option value="Card">Credit Card</option>
+                    <option value="COD">Cash on Delivery</option>
+                </select>
+
+                <div id="upiInp" class="pay-detail">
+                    <input type="text" id="vpa" class="search-input" style="width:100%" placeholder="ID: user@upi">
+                </div>
+                <div id="cardInp" class="pay-detail" style="display:none">
+                    <input type="text" class="search-input" style="width:100%; margin-bottom:5px" placeholder="Card Number">
+                </div>
+
+                <button class="btn" style="margin-top:15px" onclick="placeOrder()">Pay & Place Order</button>
+            </div>
+        </div>
+
+        <div id="confirmation" style="display:none; margin-top:15px; padding:20px; background:#e8f5e9; border-radius:15px; text-align:center">
+            <h4 style="color:#2e7d32">Order Placed!</h4>
+            <small>ID: <b id="orderId"></b></small>
+        </div>
+    </aside>
+</div>
+
+<footer>
+    <p>© 2026 Brew & Bloom Cafe</p>
+</footer>
+
+<div id="loginModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:flex; justify-content:center; align-items:center; z-index:5000;">
+    <div style="background:white; padding:25px; border-radius:15px; width:320px; text-align:center;">
+        <h3>Welcome ☕</h3>
+        <select id="userRole" class="filter-select" style="width:100%; margin-top:10px">
+            <option value="Customer">Customer</option>
+            <option value="Admin">Admin</option>
+        </select>
+        <input id="userName" class="search-input" style="width:100%; margin-top:10px" placeholder="Enter Name">
+        <input id="userPhone" class="search-input" style="width:100%; margin-top:10px" placeholder="Enter Phone Number">
+        <button class="btn" style="margin-top:15px" onclick="saveUser()">Continue</button>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
